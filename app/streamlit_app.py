@@ -2,7 +2,6 @@
 import os
 import pandas as pd
 import numpy as np
-import requests
 import streamlit as st
 import joblib
 
@@ -11,13 +10,21 @@ import joblib
 # =========================
 st.set_page_config(page_title="California Housing – Predictor", page_icon="🏠", layout="centered")
 st.title("🏠 California Housing — Predictor")
-st.caption("Predicción individual vía API y por lotes cargando el modelo local")
+st.caption("Predicción individual y por lotes usando el modelo local (sin API).")
 
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict")
+# =========================
+# Carga de modelo (cacheado)
+# =========================
+@st.cache_resource
+def load_model():
+    return joblib.load("artifacts/model.joblib")
+
+model = load_model()
 
 # =========================
 # Defaults desde el dataset (para prellenar y validar)
 # =========================
+@st.cache_data
 def load_defaults():
     try:
         df = pd.read_csv("data/housing.csv")
@@ -53,9 +60,9 @@ def load_defaults():
 med, p01, p99, default_ocean, oceans = load_defaults()
 
 # =========================
-# 1) Predicción individual (vía API)
+# 1) Predicción individual (local)
 # =========================
-st.subheader("🔹 Predicción individual (API)")
+st.subheader("🔹 Predicción individual (modelo local)")
 
 with st.form("form_single"):
     c1, c2 = st.columns(2)
@@ -125,10 +132,10 @@ with st.form("form_single"):
         help="Categoría del distrito respecto a la costa."
     )
 
-    submit_single = st.form_submit_button("Predecir (API)")
+    submit_single = st.form_submit_button("Predecir")
 
 if submit_single:
-    payload = {
+    row = {
         "longitude": longitude,
         "latitude": latitude,
         "housing_median_age": housing_median_age,
@@ -140,17 +147,14 @@ if submit_single:
         "ocean_proximity": ocean_proximity,
     }
     try:
-        resp = requests.post(API_URL, json=payload, timeout=10)
-        resp.raise_for_status()
-        yhat = resp.json().get("predicted_price")
+        X_one = pd.DataFrame([row])
+        yhat = float(model.predict(X_one)[0])
         st.success(f"Precio estimado: ${yhat:,.2f}")
-        with st.expander("Payload enviado"):
-            st.json(payload)
-        with st.expander("Request URL"):
-            st.code(API_URL)
-    except requests.exceptions.RequestException as e:
-        st.error(f"Error llamando a la API: {e}")
-        st.info(f"¿API levantada? Ejecuta:  uvicorn api.app:app --reload")
+        with st.expander("Datos usados"):
+            st.json(row)
+    except Exception as e:
+        st.error(f"Error prediciendo con el modelo local: {e}")
+        st.info("¿Existe artifacts/model.joblib en el repositorio y coincide con el pipeline de entrenamiento?")
 
 st.markdown("---")
 
@@ -179,8 +183,6 @@ if uploaded is not None:
         if missing:
             st.error(f"Faltan columnas en tu CSV: {missing}")
         else:
-            # Cargar modelo del disco y predecir
-            model = joblib.load("artifacts/model.joblib")
             preds = model.predict(df_in[required_cols])
             df_out = df_in.copy()
             df_out["predicted_price"] = preds
@@ -197,3 +199,4 @@ if uploaded is not None:
             )
     except Exception as e:
         st.error(f"Error procesando el CSV: {e}")
+
