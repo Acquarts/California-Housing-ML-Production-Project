@@ -1,116 +1,116 @@
-# 🏠 California Housing — ML Pipeline, API y Frontend
+# 🏠 California Housing — ML Pipeline, API and Frontend
 
-Proyecto completo de **Machine Learning** para predecir el valor medio de la vivienda (`median_house_value`) en distritos de California. Incluye **análisis exploratorio (EDA)**, **entrenamiento comparativo de modelos**, **API REST** con **FastAPI** y **frontend** en **Streamlit** para realizar predicciones individuales y por lotes (CSV).
+Complete **Machine Learning** project to predict the median house value (`median_house_value`) in California districts. Includes **exploratory data analysis (EDA)**, **comparative model training**, **REST API** with **FastAPI** and **frontend** in **Streamlit** for individual and batch predictions (CSV).
 
 ---
 
-## 📌 Funcionalidades principales
+## 📌 Main Features
 
-- **EDA**: análisis descriptivo, distribución de variables, detección de nulos, correlaciones.
-- **Preprocesamiento**: imputación de valores, escalado de numéricas y codificación one-hot para categóricas.
-- **Modelos probados**:
+- **EDA**: descriptive analysis, variable distribution, null detection, correlations.
+- **Preprocessing**: value imputation, scaling of numerical features and one-hot encoding for categorical features.
+- **Models tested**:
   - `LinearRegression`
   - `RandomForestRegressor`
   - `XGBRegressor`
-- Guarda automáticamente el **mejor modelo por RMSE** en `artifacts/model.joblib`.
-- **API REST**: endpoint `/predict` para recibir datos y devolver el precio estimado.
+- Automatically saves the **best model by RMSE** in `artifacts/model.joblib`.
+- **REST API**: `/predict` endpoint to receive data and return estimated price.
 - **Frontend**:
-  - Predicción **individual** vía formulario (API).
-  - Predicción **por lotes** desde un archivo CSV procesado localmente.
-- **Tests** de la API y del pipeline con `pytest`.
+  - **Individual** prediction via form (API).
+  - **Batch** prediction from a CSV file processed locally.
+- **Tests** for API and pipeline with `pytest`.
 
 ---
 
-## 📂 Estructura del proyecto
+## 📂 Project Structure
 
 ```
 california-housing-ml/
 ├── .streamlit/
-│   └── secrets.toml          # Config opcional (API_URL para Streamlit)
+│   └── secrets.toml          # Optional config (API_URL for Streamlit)
 ├── api/
-│   └── app.py               # API FastAPI con /predict y /health
+│   └── app.py               # FastAPI API with /predict and /health
 ├── app/
-│   └── streamlit_app.py     # App Streamlit (individual + CSV)
+│   └── streamlit_app.py     # Streamlit App (individual + CSV)
 ├── artifacts/
-│   └── model.joblib         # Pipeline entrenado (preprocesado + modelo)
+│   └── model.joblib         # Trained pipeline (preprocessing + model)
 ├── data/
-│   └── housing.csv          # Dataset original (opcional)
+│   └── housing.csv          # Original dataset (optional)
 ├── eda/
-│   └── eda_california_housing.ipynb  # Análisis exploratorio
+│   └── eda_california_housing.ipynb  # Exploratory analysis
 ├── src/
 │   ├── __init__.py
-│   ├── config.py            # Configuración general
-│   ├── data.py              # Funciones de carga de datos
-│   ├── evaluate.py          # Evaluación del modelo
-│   ├── pipeline.py          # Definición de transformaciones
-│   ├── predict.py           # Predicción local
-│   ├── train.py             # Entrenamiento de modelos
-│   └── utils.py             # Funciones auxiliares
+│   ├── config.py            # General configuration
+│   ├── data.py              # Data loading functions
+│   ├── evaluate.py          # Model evaluation
+│   ├── pipeline.py          # Transformation definitions
+│   ├── predict.py           # Local prediction
+│   ├── train.py             # Model training
+│   └── utils.py             # Helper functions
 ├── tests/
-│   ├── test_api.py          # Test de la API
-│   └── test_pipeline.py     # Test del pipeline
+│   ├── test_api.py          # API tests
+│   └── test_pipeline.py     # Pipeline tests
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Instalación
+## ⚙️ Installation
 
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/tu_usuario/california-housing-ml.git
+# 1. Clone the repository
+git clone https://github.com/your_username/california-housing-ml.git
 cd california-housing-ml
 
-# 2. Crear entorno virtual
+# 2. Create virtual environment
 python -m venv .venv
-# Activar (Linux/Mac)
+# Activate (Linux/Mac)
 source .venv/bin/activate
-# Activar (Windows)
+# Activate (Windows)
 .venv\Scripts\activate
 
-# 3. Instalar dependencias
+# 3. Install dependencies
 pip install -r requirements.txt
 ```
 
-💡 **Si hay problemas con xgboost en Windows:**
+💡 **If you have issues with xgboost on Windows:**
 
 ```bash
 conda install -c conda-forge xgboost
 ```
 
-## 🧪 Entrenamiento y evaluación
+## 🧪 Training and Evaluation
 
 ```bash
-# Entrenar y guardar el mejor modelo en artifacts/model.joblib
+# Train and save the best model in artifacts/model.joblib
 python -m src.train
 
-# Evaluar el modelo entrenado
+# Evaluate the trained model
 python -m src.evaluate
 ```
 
-**Ejemplo de resultados (pueden variar):**
+**Example results (may vary):**
 
-| Modelo | MAE | RMSE | R² |
+| Model | MAE | RMSE | R² |
 |--------|-----|------|-----|
 | LinearRegression | 50670.49 | 70059.19 | 0.625 |
 | RandomForest | 31393.36 | 48676.22 | 0.819 |
 | XGBRegressor | 30235.84 | 45930.94 | 0.839 |
 
-## 🚀 API con FastAPI
+## 🚀 API with FastAPI
 
 ```bash
 uvicorn api.app:app --reload
 ```
 
-**Documentación interactiva:** http://127.0.0.1:8000/docs
+**Interactive documentation:** http://127.0.0.1:8000/docs
 
 ### Endpoints:
 
-- **GET** `/health` → comprueba estado
-- **POST** `/predict` → predice precio de una vivienda
+- **GET** `/health` → check status
+- **POST** `/predict` → predict house price
 
-**Ejemplo JSON:**
+**Example JSON:**
 
 ```json
 {
@@ -126,44 +126,44 @@ uvicorn api.app:app --reload
 }
 ```
 
-**Respuesta:**
+**Response:**
 
 ```json
 { "predicted_price": 426046.59 }
 ```
 
-## 🖥️ Frontend con Streamlit
+## 🖥️ Frontend with Streamlit
 
-Lanza un formulario para predicción individual y subida de CSV para predicción por lotes.
+Launches a form for individual prediction and CSV upload for batch prediction.
 
 ```bash
 streamlit run app/streamlit_app.py
 ```
 
-### Config opcional para producción
+### Optional config for production
 
 `.streamlit/secrets.toml`:
 
 ```toml
-API_URL = "https://mi-api.com/predict"
+API_URL = "https://my-api.com/predict"
 ```
 
-### Formato CSV para predicción por lotes:
+### CSV format for batch prediction:
 
 ```csv
 longitude,latitude,housing_median_age,total_rooms,total_bedrooms,population,households,median_income,ocean_proximity
 ```
 
-💡 **Recuerda que** `total_rooms`, `total_bedrooms`, `population` y `households` son agregados a nivel de distrito.
+💡 **Remember that** `total_rooms`, `total_bedrooms`, `population` and `households` are aggregated at the district level.
 
 ## 📊 EDA
 
-En `eda/eda_california_housing.ipynb` encontrarás:
+In `eda/eda_california_housing.ipynb` you'll find:
 
-- Información general (`df.info()`, `df.describe()`).
-- Distribución de variables numéricas y categóricas.
-- Mapa de calor de correlaciones.
-- Relación geográfica entre ubicación (latitude / longitude) y precio.
+- General information (`df.info()`, `df.describe()`).
+- Distribution of numerical and categorical variables.
+- Correlation heatmap.
+- Geographic relationship between location (latitude / longitude) and price.
 
 ## 🧰 Tests
 
@@ -171,8 +171,8 @@ En `eda/eda_california_housing.ipynb` encontrarás:
 pytest -q
 ```
 
-- `test_pipeline.py`: comprueba que el pipeline se entrena y predice correctamente.
-- `test_api.py`: testea los endpoints `/health` y `/predict`.
+- `test_pipeline.py`: checks that the pipeline trains and predicts correctly.
+- `test_api.py`: tests the `/health` and `/predict` endpoints.
 
 ## 📦 requirements.txt
 
@@ -193,7 +193,7 @@ ipykernel
 pytest
 ```
 
-## 🧹 .gitignore recomendado
+## 🧹 Recommended .gitignore
 
 ```gitignore
 # Python
@@ -204,7 +204,7 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 
-# Entornos
+# Environments
 .venv/
 venv/
 .env
@@ -213,7 +213,7 @@ venv/
 # Streamlit
 .streamlit/secrets.toml
 
-# Datos y artefactos
+# Data and artifacts
 # artifacts/
 # data/
 ```
